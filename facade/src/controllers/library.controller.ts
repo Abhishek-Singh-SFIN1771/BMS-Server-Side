@@ -4,7 +4,6 @@ import { inject } from "@loopback/core";
 import { AuthorService, BookService, CategoryService } from "../services";
 import { post, requestBody, get, param, patch } from "@loopback/rest";
 import { Author, Book, Category } from "../models";
-import path from "path";
 
 
 // import {inject} from '@loopback/core';

@@ -22,7 +22,6 @@ COPY --chown=node . .
 RUN npm run build
 
 # Bind to all network interfaces so that it can be mapped to the host OS
-ENV HOST=0.0.0.0 PORT=3000
-
-EXPOSE ${PORT}
+ENV HOST=0.0.0.0 PORT=3003
+EXPOSE 3003
 CMD [ "node", "." ]
