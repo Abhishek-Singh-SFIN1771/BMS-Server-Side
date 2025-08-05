@@ -1,0 +1,95 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: bms-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Odyssey@123
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  author-service:
+    build: ./services/author-service
+    container_name: author-service
+    restart: always
+    environment:
+      DB_HOST: host.docker.internal
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: Odyssey@123
+      DB_DATABASE: authors
+      PORT: 3002
+    ports:
+      - "3002:3002"
+
+    extra_hosts:
+      - "localhost:host-gateway"  
+
+    depends_on:
+      - postgres
+
+  category-service:
+    build: ./services/category-service
+    container_name: category-service
+    restart: always
+    environment:
+      DB_HOST: host.docker.internal
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: Odyssey@123
+      DB_DATABASE: categories
+      PORT: 3003
+    ports:
+      - "3003:3003"
+
+    extra_hosts:
+      - "localhost:host-gateway"  
+
+    depends_on:
+      - postgres
+
+  book-service:
+    build: ./services/book-service
+    container_name: book-service
+    restart: always
+    environment:
+      DB_HOST: host.docker.internal
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: Odyssey@123
+      DB_DATABASE: books
+      PORT: 3001
+    ports:
+      - "3001:3001"
+
+    extra_hosts:
+      - "localhost:host-gateway"
+
+    depends_on:
+      - postgres
+
+  facade:
+    build: ./facade
+    container_name: bms-facade
+    restart: always
+    environment:
+      AUTHOR_SERVICE_URL: http://author-service:3002
+      CATEGORY_SERVICE_URL: http://category-service:3003
+      BOOK_SERVICE_URL: http://book-service:3001
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - author-service
+      - category-service
+      - book-service
+    extra_hosts:
+    - "localhost:host-gateway"
+
+
+volumes:
+  pgdata:
