@@ -1,5 +1,5 @@
 import { /* inject, */ BindingScope, injectable} from '@loopback/core';
-import {repository} from '@loopback/repository';
+import {Filter, repository} from '@loopback/repository';
 import {Category} from '../models';
 import {CategoryRepository} from '../repositories';
 
@@ -10,9 +10,9 @@ export class CategoryService {
     private categoryRepository : CategoryRepository
   ) {}
 
-  async findCategoryByName(categoryName: string) : Promise<Category>
+  async findCategoryByName(filter?: Filter<Category>) : Promise<Category>
   {
-    const category = await this.categoryRepository.findOne({where : {name : categoryName}})
+    const category = await this.categoryRepository.findOne(filter)
 
     if(!category)
       {

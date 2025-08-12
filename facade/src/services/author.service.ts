@@ -1,18 +1,37 @@
-import {injectable,  BindingScope} from '@loopback/core';
-import { Author, Book } from '../models';
-import axios from 'axios';
+import {injectable,  BindingScope, inject} from '@loopback/core';
+import { Author} from '../models';
+import { AuthorServiceProxy } from './proxies/author-proxy';
+import { getService, juggler } from '@loopback/service-proxy';
+import { AuthorDataSource } from '../datasources';
 
 @injectable({scope: BindingScope.TRANSIENT})
 export class AuthorService {
-  constructor() {}
 
-  private authorBaseUrl = 'http://localhost:3002/authors';
+  private authorProxy: AuthorServiceProxy;
+
+  constructor(
+    @inject('datasources.author')
+    private ds: juggler.DataSource = new AuthorDataSource() 
+    ) {}
+
+   private async getAuthorProxy(): Promise<AuthorServiceProxy> {
+    if (!this.authorProxy) {
+      this.authorProxy = await getService<AuthorServiceProxy>(this.ds);
+    }
+    return this.authorProxy;
+  }
 
   async findAuthor(data : Partial<Author>): Promise<Author> 
   {
+    if (!data.name) 
+      {
+        throw new Error("Author name is required");
+      }
+
         try{
-            const author = await axios.get(`${this.authorBaseUrl}/${data.name}`);
-            return author.data
+          const proxy = await this.getAuthorProxy();
+          const author = await proxy.findAuthorByName(data.name)
+          return author
         }catch (error: any) 
         {
             return this.createNewAuthor(data);
@@ -21,25 +40,26 @@ export class AuthorService {
 
   async createNewAuthor(data : Partial<Author>) : Promise <Author> 
   {
-
-    const author = await axios.post(this.authorBaseUrl, data)
+    const proxy = await this.getAuthorProxy();
+    const author = await proxy.createAuthor(data)
 
     if(!author) 
         {
             throw new Error("Author not Created");
         }
 
-    return author.data;
+    return author;
   }
 
   async findAuthorById(authorId: string): Promise<Author> 
   {
-    const authorDetail = await axios.get(`${this.authorBaseUrl}/id/${authorId}`)
+    const proxy = await this.getAuthorProxy();
+    const authorDetail = await proxy.findAuthorById(authorId);
 
     if(!authorDetail) 
         {
             throw new Error("Author details are not found")
         }
-    return authorDetail.data;    
+    return authorDetail;    
   }
 }

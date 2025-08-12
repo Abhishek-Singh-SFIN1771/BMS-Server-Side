@@ -1,34 +1,31 @@
 // Uncomment these imports to begin using these cool features!
 
-import { inject } from "@loopback/core";
+import { service } from "@loopback/core";
 import { AuthorService, BookService, CategoryService } from "../services";
-import { post, requestBody, get, param, patch } from "@loopback/rest";
+import { post, requestBody, get, param} from "@loopback/rest";
 import { Author, Book, Category } from "../models";
-
-
-// import {inject} from '@loopback/core';
 
 
 export class LibraryController {
   constructor(
-    @inject('services.AuthorService')
-    public authorService : AuthorService,
+    @service(AuthorService)
+    private authorService: AuthorService,
 
-    @inject('services.CategoryService')
-    public categoryService : CategoryService,
+    @service(CategoryService)
+    private categoryService: CategoryService,
 
-    @inject('services.BookService')
-    public bookService : BookService
+    @service(BookService)
+    private bookService: BookService,
   ) {}
 
-  @post('/findOrCreateAuthor')
+  @post('/Author')
   async findOrCreateAuthor(@requestBody() authorData: Author) : Promise<Author> 
   {
-    const author = this.authorService.findAuthor(authorData);
+    const author = await this.authorService.findAuthor(authorData);
     return author;
   }
 
-  @post('/findOrCreateCategory')
+  @post('/Category')
   async findOrCreateCategory(@requestBody() categoryData: Category) : Promise <Category> 
   {
     const category =  await this.categoryService.findCategory(categoryData);
@@ -49,9 +46,11 @@ export class LibraryController {
     return this.bookService.getBookList();
   }
 
-  @get('/books/isbn/{isbn}')
+  @get('/books/{isbn}')
   async getBookByIsbn(@param.path.string('isbn') isbn: string) : Promise<Book> 
   {
+    console.log(isbn);
+    
     return this.bookService.getBookByIsbn(isbn);
   }
 

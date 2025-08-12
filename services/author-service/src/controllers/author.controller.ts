@@ -45,7 +45,7 @@ export class AuthorController {
     return this.authorService.createNewAuthor(author)
   }
 
-  @get('/authors/{name}')
+  @get('/authors')
   @response(200, {
     description: 'Author model instance',
     content: {
@@ -54,22 +54,11 @@ export class AuthorController {
       },
     },
   })
-  async findByName(@param.path.string('name') name: string,): Promise<Author> {
-    return this.authorService.findAuthorbyName(name);
+  async findByName(@param.filter(Author) filter?: Filter<Author>): Promise<Author> {
+    return this.authorService.findAuthorbyName(filter);
   }
 
-  // @get('/authors/count')
-  // @response(200, {
-  //   description: 'Author model count',
-  //   content: {'application/json': {schema: CountSchema}},
-  // })
-  // async count(
-  //   @param.where(Author) where?: Where<Author>,
-  // ): Promise<Count> {
-  //   return this.authorRepository.count(where);
-  // }
-
-  @get('/authors/id/{id}')
+  @get('/authors/{id}')
   @response(200, {
     description: 'Array of Author model instances',
     content: {
@@ -85,59 +74,4 @@ export class AuthorController {
     return this.authorService.findAuthorById(id);
   }
 
-  // @patch('/authors')
-  // @response(200, {
-  //   description: 'Author PATCH success count',
-  //   content: {'application/json': {schema: CountSchema}},
-  // })
-  // async updateAll(
-  //   @requestBody({
-  //     content: {
-  //       'application/json': {
-  //         schema: getModelSchemaRef(Author, {partial: true}),
-  //       },
-  //     },
-  //   })
-  //   author: Author,
-  //   @param.where(Author) where?: Where<Author>,
-  // ): Promise<Count> {
-  //   return this.authorRepository.updateAll(author, where);
-  // }
-
-  // @patch('/authors/{id}')
-  // @response(204, {
-  //   description: 'Author PATCH success',
-  // })
-  // async updateById(
-  //   @param.path.string('id') id: string,
-  //   @requestBody({
-  //     content: {
-  //       'application/json': {
-  //         schema: getModelSchemaRef(Author, {partial: true}),
-  //       },
-  //     },
-  //   })
-  //   author: Author,
-  // ): Promise<void> {
-  //   await this.authorRepository.updateById(id, author);
-  // }
-
-  // @put('/authors/{id}')
-  // @response(204, {
-  //   description: 'Author PUT success',
-  // })
-  // async replaceById(
-  //   @param.path.string('id') id: string,
-  //   @requestBody() author: Author,
-  // ): Promise<void> {
-  //   await this.authorRepository.replaceById(id, author);
-  // }
-
-  // @del('/authors/{id}')
-  // @response(204, {
-  //   description: 'Author DELETE success',
-  // })
-  // async deleteById(@param.path.string('id') id: string): Promise<void> {
-  //   await this.authorRepository.deleteById(id);
-  // }
 }

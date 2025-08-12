@@ -6,18 +6,12 @@ import { RestApplication } from '@loopback/rest';
 import { ServiceMixin } from '@loopback/service-proxy';
 import path from 'path';
 import { MySequence } from './sequence';
-import { AuthorService, BookService, CategoryService } from './services';
 
 export { ApplicationConfig };
 
 export class BmsFacadeApplication extends BootMixin(ServiceMixin(RepositoryMixin(RestApplication))) {
   constructor(options: ApplicationConfig = {}) {
     super(options);
-
-
-    this.bind('services.AuthorService').toClass(AuthorService);
-    this.bind('services.CategoryService').toClass(CategoryService);
-    this.bind('services.BookService').toClass(BookService);
 
     // Set up the custom sequence
     this.sequence(MySequence);
@@ -39,7 +33,7 @@ export class BmsFacadeApplication extends BootMixin(ServiceMixin(RepositoryMixin
         dirs: ['controllers'],
         extensions: ['.controller.js'],
         nested: true,
-      },
+      }
     };
   }
 }
