@@ -1,5 +1,5 @@
 import {BindingScope, injectable} from '@loopback/core';
-import {repository} from '@loopback/repository';
+import {Filter, repository} from '@loopback/repository';
 import {Author} from '../models';
 import {AuthorRepository} from '../repositories';
 
@@ -10,9 +10,9 @@ export class AuthorService {
     public authorRepository: AuthorRepository
   ) { }
 
-  async findAuthorbyName(name : string ) : Promise<Author>
+  async findAuthorbyName(filter? : Filter<Author> ) : Promise<Author>
   {
-    const author =await this.authorRepository.findOne({where: {name : name}});
+    const author =await this.authorRepository.findOne(filter);
 
     if (!author)
       {
